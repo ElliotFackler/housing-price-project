@@ -14,23 +14,16 @@ target = data['SalePrice']
 features = data.drop(columns=['SalePrice', 'Id', 'Misc Feature', 'Pool QC', 'Alley', 'Fence', 'Mas Vnr Type', 'Fireplace Qu'], errors='ignore')
 
 # Fill missing values
-median_lot_frontage = features['Lot Frontage'].median()
-features['Lot Frontage'].fillna(median_lot_frontage, inplace=True)
-
-median_garage_yr_blt = features['Garage Yr Blt'].median()
-features['Garage Yr Blt'].fillna(median_garage_yr_blt, inplace=True)
-
-mode_garage_finish = features['Garage Finish'].mode()[0]
-features['Garage Finish'].fillna(mode_garage_finish, inplace=True)
-
-mode_garage_cond = features['Garage Cond'].mode()[0]
-features['Garage Cond'].fillna(mode_garage_cond, inplace=True)
-
-mode_garage_qual = features['Garage Qual'].mode()[0]
-features['Garage Qual'].fillna(mode_garage_qual, inplace=True)
-
-mode_garage_type = features['Garage Type'].mode()[0]
-features['Garage Type'].fillna(mode_garage_type, inplace=True)
+for col in features.columns:
+    if features[col].isnull().sum() > 0:
+        if features[col].dtype in [np.float64, np.int64]:
+            median = features[col].median()
+            features[col].fillna(median, inplace=True)
+            print(f"Filled missing values in '{col}' with median: {median}")
+        else:
+            mode = features[col].mode()[0]
+            features[col].fillna(mode, inplace=True)
+            print(f"Filled missing values in '{col}' with mode: {mode}")
 
 
 print(f"\nShape of X (features): {features.shape}")
